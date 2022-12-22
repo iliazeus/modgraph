@@ -2,7 +2,7 @@
 
 `modgraph` is a tool to explore a collection of tracker <i>mod</i>ule files as a module->sample _graph_.
 It can function both as a CLI app, and as a library to use in notebooks.
-In fact, this file is a [notebook](example.ipynb)!
+In fact, this file is a [notebook](README.ipynb)!
 
 ## Using through CLI
 

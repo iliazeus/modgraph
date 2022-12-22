@@ -1,6 +1,6 @@
 [project]
 name = "modgraph"
-version = "0.2.0"
+version = "0.2.1"
 description = "a tool to analyze sample overlap between tracker module files"
 authors = [
     {name = "Ilia Pozdnyakov", email = "ilia.pozdnyakov@ya.ru"},
@@ -10,6 +10,15 @@ dependencies = [
 ]
 requires-python = ">=3.10"
 license = {text = "MIT"}
+readme = "README.md"
+keywords = ["tracker", "music", "samples"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Topic :: Multimedia :: Sound/Audio :: Analysis",
+    "Topic :: Utilities",
+    "License :: OSI Approved :: MIT License",
+]
 
 [tool.pdm]
 [tool.pdm.dev-dependencies]
