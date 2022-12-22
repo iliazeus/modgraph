@@ -1,6 +1,6 @@
 [project]
 name = "modgraph"
-version = "0.2.1"
+version = "0.2.2"
 description = "a tool to analyze sample overlap between tracker module files"
 authors = [
     {name = "Ilia Pozdnyakov", email = "ilia.pozdnyakov@ya.ru"},
