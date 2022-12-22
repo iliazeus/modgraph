@@ -1,66 +1,51 @@
 from argparse import ArgumentParser
+from collections import Counter
 from csv import writer as CsvWriter
-from dataclasses import dataclass
-from hashlib import md5
+from json import dumps as to_json
 from pathlib import Path
 from sys import stdout
-from typing import Any, Protocol, TypedDict
-from trackrip import tracker
 
-
-class Sample(TypedDict):
-    name: str
-    data: bytes
-
-
-class Module(Protocol):
-    samples: list[Sample]
-
-
-@dataclass(frozen=True)
-class EntryKey:
-    mod_path: Path
-    sample_hash: str
-
-
-@dataclass
-class Entry:
-    mod_path: Path
-    sample_name: str
-    sample_hash: str
-    count: int
+from .modgraph import modgraph
 
 
 def main() -> int:
     parser = ArgumentParser(prog="modgraph")
-    parser.add_argument("files", type=Path, nargs="+", help="module files to analyze")
+
+    # fmt: off
+    parser.add_argument(
+        "files", help="module files to analyze",
+        type=Path, nargs="+")
+    parser.add_argument(
+        "-f", "--format", help="output format",
+        choices=["csv", "d2"], default="csv")
+    parser.add_argument(
+        "-r", "--rank", help="min number of repeats for sample to be included",
+        type=int, default=1)
+    # fmt: on
+
     args = parser.parse_args()
 
-    entries: dict[EntryKey, Entry] = {}
+    entries = modgraph(args.files)
 
-    for mod_path in args.files:
-        with open(mod_path, "rb") as mod_file:
-            # why is it annotated as -> str? it returns a module object
-            mod: Module = tracker.identify_module(mod_file)  # type: ignore
+    sample_hash_counts = Counter(e.sample_hash for e in entries)
+    entries = list(e for e in entries if sample_hash_counts[e.sample_hash] >= args.rank)
 
-            for sample in mod.samples:
-                if "data" not in sample:
-                    continue
+    if args.format == "csv":
+        writer = CsvWriter(stdout, escapechar="\\")
+        writer.writerow(("mod_path", "sample_name", "sample_hash"))
+        for e in entries:
+            writer.writerow((e.mod_path, e.sample_name, e.sample_hash))
 
-                sample_name = sample["name"]
-                sample_hash = md5(sample["data"]).hexdigest()
+    elif args.format == "d2":
+        escape = lambda x: to_json(str(x), ensure_ascii=False)
 
-                key = EntryKey(mod_path, sample_hash)
+        print(f"direction: right")
 
-                e = entries.get(key)
-                if e is None:
-                    entries[key] = Entry(mod_path, sample_name, sample_hash, 1)
-                else:
-                    e.count += 1
+        for e in entries:
+            sample_id = f"sample.{escape(e.sample_hash)}"
+            module_id = f"module.{escape(e.mod_path)}"
+            sample_name = escape(e.sample_name)
 
-    writer = CsvWriter(stdout, escapechar="\\")
-    writer.writerow(("mod_path", "sample_name", "sample_hash", "count"))
-    for e in entries.values():
-        writer.writerow((e.mod_path, e.sample_name, e.sample_hash, e.count))
+            print(f"{sample_id} -> {module_id}.{sample_name}")
 
     return 0
