@@ -1,0 +1,14 @@
+[[package]]
+name = "trackrip"
+version = "2.0.0"
+requires_python = ">=3.7"
+summary = "Extracts samples from various music tracker module formats"
+
+[metadata]
+lock_version = "4.1"
+content_hash = "sha256:b4994903cd464c7520264e9b4e399d1fde1af308c96647f86be50d53e549bd64"
+
+[metadata.files]
+"trackrip 2.0.0" = [
+    {url = "https://files.pythonhosted.org/packages/1c/ad/4178b854c7c2b8b26b5a61948b436f792daeb2e41aa88cb9f2643e5fb3af/trackrip-2.0.0.tar.gz", hash = "sha256:277d237779e9df0da389732b86741e9a3398523748bd593af13663a7949f83b6"},
+]
